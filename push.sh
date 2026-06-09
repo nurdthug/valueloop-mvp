@@ -1,17 +1,28 @@
 #!/bin/bash
-# Run this once from your terminal to push everything to GitHub:
-# chmod +x push.sh && ./push.sh
+# Usage: ./push.sh YOUR_GITHUB_TOKEN
+# Get a token at: https://github.com/settings/tokens/new
+# Scopes needed: check "repo"
 
 set -e
 cd "$(dirname "$0")"
 
+TOKEN=$1
+if [ -z "$TOKEN" ]; then
+  echo ""
+  echo "Usage: ./push.sh YOUR_GITHUB_TOKEN"
+  echo ""
+  echo "Get one at: https://github.com/settings/tokens/new"
+  echo "Check the 'repo' scope, set expiration to 90 days, click Generate token."
+  echo ""
+  exit 1
+fi
+
 # Remove stale git lock if present
 rm -f .git/index.lock
 
-# If no remote set yet, add it
-if ! git remote | grep -q origin; then
-  git remote add origin https://github.com/nurdthug/valueloop-mvp.git
-fi
+# Set remote with token auth
+git remote remove origin 2>/dev/null || true
+git remote add origin https://nurdthug:${TOKEN}@github.com/nurdthug/valueloop-mvp.git
 
 # Stage and commit everything
 git add .
@@ -25,10 +36,13 @@ git commit -m "Phase 2-5: loop matching, AI logging, Stripe, admin pages, invite
 - post/new: cash price field + optional Stripe link generation
 - admin/posts: all posts view with flag action
 - admin/exchanges: outcomes, completion rate, cash tracking
-- migrations/002: exchanges.match_id unique constraint + activity_flags columns"
+- migrations/002: exchanges.match_id unique constraint + activity_flags columns" 2>/dev/null || echo "Nothing new to commit"
 
-# Push (force if needed to sync with GitHub's existing main)
-git push -u origin main --force-with-lease 2>/dev/null || git push -u origin main --force
+# Push
+git push -u origin main --force
+
+# Clean token out of remote URL
+git remote set-url origin https://github.com/nurdthug/valueloop-mvp.git
 
 echo ""
-echo "Done! Check https://github.com/nurdthug/valueloop-mvp"
+echo "Done! https://github.com/nurdthug/valueloop-mvp"
