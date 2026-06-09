@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --teal: #00B4D8;
+    --purple: #7B2FBE;
+    --brand-dark: #0D1B2A;
+  }
+  body { @apply bg-white text-gray-900 antialiased; }
+}
