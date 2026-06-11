@@ -20,7 +20,6 @@ export async function POST(req: Request) {
       unit_amount: Math.round(cash_price * 100),
       product_data: {
         name: title,
-        description: description?.slice(0, 255) || undefined,
         metadata: { post_id, seller_id: user.id },
       },
     })

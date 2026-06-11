@@ -166,7 +166,7 @@ export async function POST(req: Request) {
     input_snapshot: { post_id, post_title: post.title, post_type: post.type, candidate_count: candidates.length },
     output_snapshot: { direct_count: directResults.length, loop_count: loopResults.length, saved: savedMatches.length },
     model: 'claude-sonnet-4-6',
-  }).throwOnError().then(() => {}).catch(() => {})
+  })
 
   return NextResponse.json({ matches: [...directResults.slice(0, 3), ...loopResults.slice(0, 1)] })
 }
