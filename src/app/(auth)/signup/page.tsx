@@ -18,7 +18,7 @@ function SignupForm() {
     e.preventDefault()
     setLoading(true); setError('')
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email, password,
       options: {
         data: { display_name: name, invite_code_used: inviteCode },
@@ -26,7 +26,16 @@ function SignupForm() {
       }
     })
     if (error) { setError(error.message); setLoading(false); return }
-    router.push('/verify-email')
+    // Email confirmation disabled → session is returned immediately
+    if (data.session) {
+      if (inviteCode) {
+        try { await fetch('/api/invite/claim', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: inviteCode, new_user_id: data.session.user.id }) }) } catch {}
+      }
+      router.push('/onboarding')
+      router.refresh()
+    } else {
+      router.push('/verify-email')
+    }
   }
 
   return (
