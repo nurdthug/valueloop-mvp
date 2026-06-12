@@ -1,40 +1,23 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { aiJson, AI_MODEL } from '@/lib/ai'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-const client = new Anthropic()
-
 async function scoreDirectMatch(post: any, candidate: any) {
-  try {
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 300,
-      messages: [{
-        role: 'user',
-        content: `You are a value exchange matchmaker. Evaluate if these two posts represent a fair and practical exchange.
+  return aiJson(
+    `You are a value exchange matchmaker. Evaluate if these two posts represent a fair and practical exchange.
 
 Post A (${post.type}): ${post.title} — ${post.description} [Category: ${post.category}${post.estimated_value ? `, Value: $${post.estimated_value}` : ''}]
 Post B (${candidate.type}): ${candidate.title} — ${candidate.description} [Category: ${candidate.category}${candidate.estimated_value ? `, Value: $${candidate.estimated_value}` : ''}]
 
 Consider: category match, practical usefulness, value fairness, and feasibility.
 Return ONLY valid JSON: {"score": 0-100, "explanation": "one sentence", "recommend_admin_review": true|false}`,
-      }],
-    })
-    const text = (msg.content[0] as any).text
-    return JSON.parse(text.match(/\{[\s\S]*?\}/)?.[0] || '{}')
-  } catch {
-    return null
-  }
+    300
+  )
 }
 
 async function scoreLoopMatch(postA: any, postB: any, postC: any) {
-  try {
-    const msg = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 400,
-      messages: [{
-        role: 'user',
-        content: `Evaluate this 3-way value exchange loop for fairness and practicality.
+  return aiJson(
+    `Evaluate this 3-way value exchange loop for fairness and practicality.
 
 Person A offers: ${postA.title} (${postA.category}${postA.estimated_value ? `, ~$${postA.estimated_value}` : ''})
 Person B offers: ${postB.title} (${postB.category}${postB.estimated_value ? `, ~$${postB.estimated_value}` : ''})
@@ -42,13 +25,8 @@ Person C offers: ${postC.title} (${postC.category}${postC.estimated_value ? `, ~
 
 Loop: A gives to B, B gives to C, C gives to A.
 Return ONLY valid JSON: {"score": 0-100, "explanation": "one sentence describing the loop exchange"}`,
-      }],
-    })
-    const text = (msg.content[0] as any).text
-    return JSON.parse(text.match(/\{[\s\S]*?\}/)?.[0] || '{}')
-  } catch {
-    return null
-  }
+    400
+  )
 }
 
 export async function POST(req: Request) {
@@ -125,7 +103,7 @@ export async function POST(req: Request) {
       status: r.recommend_admin_review ? 'pending_review' : 'approved',
       match_score: r.score,
       ai_explanation: r.explanation,
-      ai_model: 'claude-sonnet-4-6',
+      ai_model: AI_MODEL,
     }).select().single()
 
     if (match) {
@@ -144,7 +122,7 @@ export async function POST(req: Request) {
       status: 'pending_review',
       match_score: r.score,
       ai_explanation: r.explanation,
-      ai_model: 'claude-sonnet-4-6',
+      ai_model: AI_MODEL,
     }).select().single()
 
     if (match) {
@@ -165,7 +143,7 @@ export async function POST(req: Request) {
     type: 'match',
     input_snapshot: { post_id, post_title: post.title, post_type: post.type, candidate_count: candidates.length },
     output_snapshot: { direct_count: directResults.length, loop_count: loopResults.length, saved: savedMatches.length },
-    model: 'claude-sonnet-4-6',
+    model: AI_MODEL,
   })
 
   return NextResponse.json({ matches: [...directResults.slice(0, 3), ...loopResults.slice(0, 1)] })
