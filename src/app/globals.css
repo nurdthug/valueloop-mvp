@@ -8,5 +8,22 @@
     --purple: #7B2FBE;
     --brand-dark: #0D1B2A;
   }
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
   body { @apply bg-white text-gray-900 antialiased; }
+
+  /* Mobile: keep form controls at 16px so iOS Safari doesn't auto-zoom on focus */
+  @media (max-width: 640px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* Comfortable tap targets on touch devices */
+  @media (pointer: coarse) {
+    button, a, input[type="checkbox"], input[type="radio"] {
+      touch-action: manipulation;
+    }
+  }
 }
