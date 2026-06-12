@@ -34,20 +34,29 @@ export default function OnboardingPage() {
   const [bio, setBio] = useState('')
   const [location, setLocation] = useState('')
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleFinish() {
     setSaving(true)
+    setError('')
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-    await supabase.from('profiles').upsert({
-      id: user.id,
+    if (!user) { router.push('/login'); return }
+    // Profile row is created by a DB trigger at signup — update it (RLS allows update, not insert)
+    const { error: updateError } = await supabase.from('profiles').update({
       display_name: name || user.user_metadata.display_name || 'ValueLooper',
       bio,
       location,
       onboarding_complete: true,
-    })
+      updated_at: new Date().toISOString(),
+    }).eq('id', user.id)
+    if (updateError) {
+      setError(`Could not save your profile: ${updateError.message}`)
+      setSaving(false)
+      return
+    }
     router.push('/dashboard')
+    router.refresh()
   }
 
   const s = STEPS[step]
@@ -99,6 +108,8 @@ export default function OnboardingPage() {
               </div>
             </div>
           )}
+
+          {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
 
           <div className="mt-8 flex gap-3">
             {step > 0 && (
