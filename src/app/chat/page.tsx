@@ -4,6 +4,15 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { ChatMessage, Profile } from '@/types'
 
+function formatTime(iso: string) {
+  const d = new Date(iso)
+  const now = new Date()
+  const diffH = (now.getTime() - d.getTime()) / 3600000
+  if (diffH < 24) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  if (diffH < 168) return d.toLocaleDateString([], { weekday: 'short', hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
+}
+
 function ChatView() {
   const params = useSearchParams()
   const router = useRouter()
@@ -15,7 +24,9 @@ function ChatView() {
   const [sending, setSending] = useState(false)
   const [exchangeStatus, setExchangeStatus] = useState<string | null>(null)
   const [acting, setActing] = useState(false)
+  const [matchInfo, setMatchInfo] = useState<any>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -24,12 +35,17 @@ function ChatView() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.push('/login'); return }
       setUserId(user.id)
+
+      const { data: match } = await supabase.from('matches').select('*, match_participants(*, profiles(*), posts(*))').eq('id', matchId).single()
+      if (match) setMatchInfo(match)
+
       const { data: thread } = await supabase.from('chat_threads').select('*').eq('match_id', matchId).single()
       if (!thread) return
       setThreadId(thread.id)
+
       const { data: msgs } = await supabase.from('chat_messages').select('*, profile:profiles(*)').eq('thread_id', thread.id).order('created_at')
       setMessages(msgs as any || [])
-      // Load exchange status
+
       const { data: exchange } = await supabase.from('exchanges').select('status').eq('match_id', matchId!).single()
       if (exchange) setExchangeStatus(exchange.status)
     }
@@ -48,18 +64,18 @@ function ChatView() {
     return () => { supabase.removeChannel(channel) }
   }, [threadId])
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
 
   async function handleExchangeAction(action: 'completed' | 'abandoned') {
     if (!matchId || acting) return
     setActing(true)
-    // Upsert exchange record
     await supabase.from('exchanges').upsert({
       match_id: matchId,
       status: action,
       completed_at: action === 'completed' ? new Date().toISOString() : null,
     }, { onConflict: 'match_id' })
-    // Update match status
     await supabase.from('matches').update({ status: action }).eq('id', matchId)
     setExchangeStatus(action)
     setActing(false)
@@ -72,54 +88,111 @@ function ChatView() {
     await supabase.from('chat_messages').insert({ thread_id: threadId, user_id: userId, content: newMsg.trim() })
     setNewMsg('')
     setSending(false)
+    inputRef.current?.focus()
   }
 
+  const otherParticipants = matchInfo?.match_participants?.filter((p: any) => p.user_id !== userId) || []
+  const chatTitle = otherParticipants.length > 0
+    ? otherParticipants.map((p: any) => p.profiles?.display_name).filter(Boolean).join(', ')
+    : 'Exchange Chat'
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <nav className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-gray-400">←</button>
-        <span className="font-semibold text-gray-900">Exchange Chat</span>
-      </nav>
-      <div className="flex-1 overflow-y-auto px-4 py-4 max-w-2xl w-full mx-auto space-y-3">
-        {messages.map(msg => (
-          <div key={msg.id} className={`flex ${msg.user_id === userId ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-xs px-4 py-3 rounded-2xl text-sm ${msg.user_id === userId ? 'bg-gradient-to-r from-teal-500 to-purple-600 text-white' : 'bg-white border border-gray-100 text-gray-800'}`}>
-              {msg.user_id !== userId && <p className="text-xs font-semibold mb-1 text-gray-500">{(msg as any).profile?.display_name}</p>}
-              {msg.content}
-            </div>
+    <div className="h-screen flex flex-col bg-gray-50">
+      {/* Nav */}
+      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 flex-shrink-0">
+        <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 transition text-gray-500">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-gray-900 text-sm truncate">{chatTitle}</p>
+          {matchInfo && (
+            <p className="text-xs text-gray-400">
+              {matchInfo.type === 'direct' ? 'â¡ Direct Match' : 'ð Loop Match'} Â· {matchInfo.match_score}% match
+            </p>
+          )}
+        </div>
+        {exchangeStatus === 'completed' && (
+          <span className="text-xs bg-green-50 text-green-600 font-semibold px-2.5 py-1 rounded-full">â Done</span>
+        )}
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {messages.length === 0 && (
+          <div className="text-center py-12 text-gray-400">
+            <div className="text-4xl mb-3">ð</div>
+            <p className="text-sm font-medium">Start the conversation</p>
+            <p className="text-xs mt-1">Introduce yourself and discuss the exchange</p>
           </div>
-        ))}
+        )}
+        {messages.map((msg, i) => {
+          const isMe = msg.user_id === userId
+          const prevMsg = messages[i - 1]
+          const showSender = !isMe && (!prevMsg || prevMsg.user_id !== msg.user_id)
+          return (
+            <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+              {showSender && (
+                <p className="text-xs text-gray-400 font-semibold mb-1 ml-1">
+                  {(msg as any).profile?.display_name}
+                </p>
+              )}
+              <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                isMe
+                  ? 'bg-gradient-to-r from-teal-500 to-purple-600 text-white rounded-br-md'
+                  : 'bg-white border border-gray-100 text-gray-800 rounded-bl-md shadow-sm'
+              }`}>
+                {msg.content}
+              </div>
+              <p className="text-[10px] text-gray-300 mt-1 mx-1">{formatTime(msg.created_at)}</p>
+            </div>
+          )
+        })}
         <div ref={bottomRef} />
       </div>
-      {/* Exchange outcome actions */}
+
+      {/* Exchange outcome */}
       {exchangeStatus === 'completed' && (
-        <div className="bg-green-50 border-t border-green-100 px-4 py-3 text-center text-sm text-green-700 font-medium max-w-2xl w-full mx-auto">
-          ✅ Exchange marked as completed!
+        <div className="bg-green-50 border-t border-green-100 px-4 py-3 text-center flex-shrink-0">
+          <p className="text-sm text-green-700 font-semibold">â Exchange completed!</p>
         </div>
       )}
       {exchangeStatus === 'abandoned' && (
-        <div className="bg-gray-50 border-t border-gray-100 px-4 py-3 text-center text-sm text-gray-500 max-w-2xl w-full mx-auto">
-          This exchange was abandoned.
+        <div className="bg-gray-50 border-t border-gray-100 px-4 py-3 text-center flex-shrink-0">
+          <p className="text-sm text-gray-500">This exchange was abandoned.</p>
         </div>
       )}
-      {!exchangeStatus || (exchangeStatus === 'in_progress') ? (
-        <div className="bg-white border-t border-gray-100 px-4 py-2 flex gap-2 max-w-2xl w-full mx-auto">
+
+      {(!exchangeStatus || exchangeStatus === 'in_progress') && (
+        <div className="bg-white border-t border-gray-100 px-4 py-2 flex gap-2 flex-shrink-0">
           <button onClick={() => handleExchangeAction('completed')} disabled={acting}
-            className="flex-1 py-2 bg-green-50 text-green-700 text-xs font-semibold rounded-xl hover:bg-green-100 transition disabled:opacity-50">
-            ✅ Mark Complete
+            className="flex-1 py-2 bg-green-50 text-green-700 text-xs font-bold rounded-xl hover:bg-green-100 transition disabled:opacity-50 active:scale-[0.98]">
+            â Mark Complete
           </button>
           <button onClick={() => handleExchangeAction('abandoned')} disabled={acting}
-            className="flex-1 py-2 bg-gray-50 text-gray-500 text-xs font-semibold rounded-xl hover:bg-gray-100 transition disabled:opacity-50">
-            ✗ Abandon
+            className="flex-1 py-2 bg-gray-50 text-gray-500 text-xs font-semibold rounded-xl hover:bg-gray-100 transition disabled:opacity-50 active:scale-[0.98]">
+            â Abandon
           </button>
         </div>
-      ) : null}
-      <form onSubmit={sendMessage} className="bg-white border-t border-gray-100 px-4 py-3 flex gap-3 max-w-2xl w-full mx-auto">
-        <input type="text" value={newMsg} onChange={e => setNewMsg(e.target.value)} placeholder="Type a message…"
-          className="flex-1 px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
+      )}
+
+      {/* Message input */}
+      <form onSubmit={sendMessage}
+        className="bg-white border-t border-gray-100 px-4 py-3 flex gap-2.5 flex-shrink-0 safe-area-pb">
+        <input
+          ref={inputRef}
+          type="text"
+          value={newMsg}
+          onChange={e => setNewMsg(e.target.value)}
+          placeholder="Messageâ¦"
+          className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:bg-white transition"
+        />
         <button type="submit" disabled={sending || !newMsg.trim()}
-          className="px-4 py-2 bg-gradient-to-r from-teal-500 to-purple-600 text-white text-sm font-semibold rounded-xl disabled:opacity-50">
-          Send
+          className="w-10 h-10 bg-gradient-to-r from-teal-500 to-purple-600 text-white rounded-2xl flex items-center justify-center disabled:opacity-40 active:scale-95 transition flex-shrink-0">
+          <svg className="w-4 h-4 rotate-90" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
         </button>
       </form>
     </div>
