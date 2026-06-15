@@ -14,10 +14,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid price' }, { status: 400 })
   }
 
+  // 5% platform fee added to buyer price (seller receives full cash_price)
+  const PLATFORM_FEE_PCT = 0.05
+  const buyerAmountCents = Math.round(cash_price * 100 * (1 + PLATFORM_FEE_PCT))
+
   try {
     const priceObj = await stripe.prices.create({
       currency: 'usd',
-      unit_amount: Math.round(cash_price * 100),
+      unit_amount: buyerAmountCents,
       product_data: {
         name: title,
         metadata: { post_id, seller_id: user.id },
