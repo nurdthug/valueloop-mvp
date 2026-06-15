@@ -104,7 +104,10 @@ function SignupForm() {
             </button>
 
             <p className="text-center text-xs text-gray-400 mt-1">
-              By signing up you agree to our Terms of Service
+              By signing up you agree to our{', '}
+              <Link href="/terms" className="text-teal-600 hover:underline">Terms of Service</Link>
+              {' '}and{', '}
+              <Link href="/privacy" className="text-teal-600 hover:underline">Privacy Policy</Link>
             </p>
           </form>
 
