@@ -20,8 +20,12 @@ export async function updateSession(request: NextRequest) {
   )
   const { data: { user } } = await supabase.auth.getUser()
   const url = request.nextUrl.clone()
-  const publicPaths = ['/', '/login', '/signup', '/verify-email', '/join']
-  const isPublic = publicPaths.some(p => url.pathname === p || url.pathname.startsWith('/join/'))
+  const publicPaths = ['/', '/browse', '/login', '/signup', '/verify-email', '/join', '/privacy', '/terms']
+  const isPublic =
+    publicPaths.some(p => url.pathname === p) ||
+    url.pathname.startsWith('/join/') ||
+    url.pathname.startsWith('/browse') ||
+    url.pathname.startsWith('/auth/')
   if (!user && !isPublic) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
