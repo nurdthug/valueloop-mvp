@@ -5,11 +5,11 @@ import { createClient } from '@/lib/supabase/client'
 import { CATEGORIES, PostType } from '@/types'
 
 const CATEGORY_EMOJI: Record<string, string> = {
-  'Design & Creative': 'ð¨', 'Web & Tech': 'ð»', 'Marketing': 'ð£',
-  'Writing & Content': 'âï¸', 'Legal': 'âï¸', 'Finance & Accounting': 'ð°',
-  'Tutoring & Education': 'ð', 'Health & Wellness': 'ð¿', 'Home & Garden': 'ð¡',
-  'Food & Cooking': 'ð³', 'Transport & Moving': 'ð', 'Music & Audio': 'ðµ',
-  'Photography & Video': 'ð·', 'Business & Consulting': 'ð¼', 'Other': 'â¨',
+  'Design & Creative': '🎨', 'Web & Tech': '💻', 'Marketing': '📣',
+  'Writing & Content': '✍️', 'Legal': '⚖️', 'Finance & Accounting': '💰',
+  'Tutoring & Education': '📚', 'Health & Wellness': '🌿', 'Home & Garden': '🏡',
+  'Food & Cooking': '🍳', 'Transport & Moving': '🚚', 'Music & Audio': '🎵',
+  'Photography & Video': '📷', 'Business & Consulting': '💼', 'Other': '✨',
 }
 
 function PostForm() {
@@ -103,7 +103,7 @@ function PostForm() {
                     ? `bg-white shadow-sm ${t === 'need' ? 'text-blue-600' : 'text-green-600'}`
                     : 'text-gray-400'
                 }`}>
-                {t === 'need' ? 'ð I Need' : 'ð I Offer'}
+                {t === 'need' ? '📋 I Need' : '🎁 I Offer'}
               </button>
             ))}
           </div>
@@ -116,13 +116,13 @@ function PostForm() {
               </label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)}
                 placeholder={isNeed ? 'e.g. Need a logo designer' : 'e.g. Web development services'}
-                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-gray-50 focus:bg-white transition" required />
+                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white transition" required />
             </div>
             <div>
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Description</label>
               <textarea value={description} onChange={e => setDescription(e.target.value)} rows={4}
-                placeholder={isNeed ? 'Describe exactly what you need, timeline, any requirementsâ¦' : 'Describe what you offer, your experience, what's includedâ¦'}
-                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-gray-50 focus:bg-white transition resize-none" required />
+                placeholder={isNeed ? 'Describe exactly what you need, timeline, any requirements…' : 'Describe what you offer, your experience, what’s included…'}
+                className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white transition resize-none" required />
             </div>
           </div>
 
@@ -134,11 +134,11 @@ function PostForm() {
                 <button key={cat} type="button" onClick={() => setCategory(cat)}
                   className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border text-center transition-all active:scale-95 ${
                     category === cat
-                      ? 'border-teal-400 bg-teal-50 shadow-sm'
+                      ? 'border-blue-400 bg-blue-50 shadow-sm'
                       : 'border-gray-100 bg-gray-50 hover:border-gray-200'
                   }`}>
                   <span className="text-xl">{CATEGORY_EMOJI[cat]}</span>
-                  <span className={`text-[10px] font-semibold leading-tight ${category === cat ? 'text-teal-700' : 'text-gray-500'}`}>
+                  <span className={`text-[10px] font-semibold leading-tight ${category === cat ? 'text-blue-700' : 'text-gray-500'}`}>
                     {cat}
                   </span>
                 </button>
@@ -151,11 +151,11 @@ function PostForm() {
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
             <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Location</label>
             <input type="text" value={location} onChange={e => setLocation(e.target.value)} placeholder="Your city (optional)"
-              className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-gray-50 focus:bg-white transition" />
+              className="w-full mt-2 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white transition" />
             <label className="flex items-center gap-2.5 mt-3 cursor-pointer">
               <div
                 onClick={() => setRemoteOk(v => !v)}
-                className={`w-10 h-6 rounded-full transition-colors relative ${remoteOk ? 'bg-teal-500' : 'bg-gray-200'}`}>
+                className={`w-10 h-6 rounded-full transition-colors relative ${remoteOk ? 'bg-blue-500' : 'bg-gray-200'}`}>
                 <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${remoteOk ? 'translate-x-5' : 'translate-x-1'}`} />
               </div>
               <span className="text-sm text-gray-700 font-medium">Remote / online OK</span>
@@ -167,22 +167,22 @@ function PostForm() {
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Estimated Value (USD)</label>
               <button type="button" onClick={fetchAiPrice} disabled={aiLoading || !title || !category || !description}
-                className="flex items-center gap-1 text-xs text-teal-600 font-bold disabled:opacity-40 bg-teal-50 px-2.5 py-1 rounded-lg transition hover:bg-teal-100">
+                className="flex items-center gap-1 text-xs text-blue-600 font-bold disabled:opacity-40 bg-blue-50 px-2.5 py-1 rounded-lg transition hover:bg-blue-100">
                 {aiLoading ? (
-                  <><svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Estimatingâ¦</>
-                ) : 'â¨ AI Estimate'}
+                  <><svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Estimating…</>
+                ) : '✨ AI Estimate'}
               </button>
             </div>
             {aiRange && (
-              <div className="bg-gradient-to-r from-teal-50 to-purple-50 border border-teal-100 rounded-xl px-4 py-3">
-                <p className="text-sm font-bold text-teal-800">AI suggests: ${aiRange.min}â${aiRange.max}</p>
-                <p className="text-xs text-teal-600 mt-0.5">{aiRange.rationale}</p>
+              <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-100 rounded-xl px-4 py-3">
+                <p className="text-sm font-bold text-blue-800">AI suggests: ${aiRange.min}–${aiRange.max}</p>
+                <p className="text-xs text-blue-600 mt-0.5">{aiRange.rationale}</p>
               </div>
             )}
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">$</span>
               <input type="number" value={estimatedValue} onChange={e => setEstimatedValue(e.target.value)} placeholder="0.00" min="0" step="0.01"
-                className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-gray-50 focus:bg-white transition" />
+                className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white transition" />
             </div>
           </div>
 
@@ -196,13 +196,13 @@ function PostForm() {
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-semibold">$</span>
                 <input type="number" value={cashPrice} onChange={e => setCashPrice(e.target.value)} placeholder="0.00" min="0" step="0.01"
-                  className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-gray-50 focus:bg-white transition" />
+                  className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 focus:bg-white transition" />
               </div>
               {cashPrice && parseFloat(cashPrice) > 0 && (
                 <label className="flex items-center gap-2.5 cursor-pointer">
                   <div
                     onClick={() => setGenerateStripeLink(v => !v)}
-                    className={`w-10 h-6 rounded-full transition-colors relative ${generateStripeLink ? 'bg-teal-500' : 'bg-gray-200'}`}>
+                    className={`w-10 h-6 rounded-full transition-colors relative ${generateStripeLink ? 'bg-blue-500' : 'bg-gray-200'}`}>
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${generateStripeLink ? 'translate-x-5' : 'translate-x-1'}`} />
                   </div>
                   <span className="text-sm text-gray-700 font-medium">Generate Stripe payment link</span>
@@ -212,16 +212,16 @@ function PostForm() {
           )}
 
           <button type="submit" disabled={saving || !category}
-            className="w-full py-4 bg-gradient-to-r from-teal-500 to-purple-600 text-white font-bold rounded-2xl hover:opacity-90 active:scale-[0.98] transition shadow-lg shadow-teal-500/20 disabled:opacity-50 text-sm">
+            className="w-full py-4 bg-gradient-to-r from-blue-500 to-green-600 text-white font-bold rounded-2xl hover:opacity-90 active:scale-[0.98] transition shadow-lg shadow-blue-500/20 disabled:opacity-50 text-sm">
             {saving ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                 </svg>
-                Postingâ¦
+                Posting…
               </span>
-            ) : `Post ${isNeed ? 'Request' : 'Offer'} â`}
+            ) : `Post ${isNeed ? 'Request' : 'Offer'} →`}
           </button>
         </form>
       </div>
