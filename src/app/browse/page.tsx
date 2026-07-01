@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import BottomNav from '@/components/BottomNav'
+import VLLogo from '@/components/VLLogo'
 import { CATEGORIES } from '@/types'
 
 export const dynamic = 'force-dynamic'
@@ -67,8 +68,8 @@ export default async function BrowsePage({
         <div className="max-w-lg mx-auto px-4 pt-4 pb-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Browse ValueLoop</h1>
-              <p className="text-xs text-gray-400 mt-0.5">See what people need & offer near you</p>
+              <VLLogo size={30} />
+              <p className="text-xs text-gray-400 mt-1">See what people need and offer near you</p>
             </div>
             {!user && (
               <div className="flex gap-2">
