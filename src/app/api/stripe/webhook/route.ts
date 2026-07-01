@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const sig = req.headers.get('stripe-signature')
 
   if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
-    return NextResponse.json({ error: 'Missing signature or secret' }, { status: 400 })
+    return NextResponse.json({ error: 'Missing signature or webhook secret' }, { status: 400 })
   }
 
   let event: Stripe.Event
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     const sellerAmount = amountTotal - platformFeeAmount
 
     if (postId) {
-      // Log the payment
+      // Log the payment in ai_recommendation_log (reuse for revenue tracking)
       await supabase.from('ai_recommendation_log').insert({
         type: 'payment',
         input_snapshot: {
@@ -48,10 +48,10 @@ export async function POST(req: Request) {
           payment_status: session.payment_status,
         },
         model: 'stripe',
-      }).catch(() => {})
+      }).then(() => {}, () => {})
 
       // Mark post as matched/completed
-      await supabase.from('posts').update({ status: 'matched' }).eq('id', postId).catch(() => {})
+      await supabase.from('posts').update({ status: 'matched' }).eq('id', postId).then(() => {}, () => {})
     }
   }
 
@@ -62,5 +62,8 @@ export async function POST(req: Request) {
   return NextResponse.json({ received: true })
 }
 
-// Disable body parsing â Stripe needs the raw body for signature verification
-export const config = { api: { bodyParser: false } }
+// App Router reads the raw body via req.text() (used above), which is what
+// Stripe needs for signature verification. Force the Node.js runtime so the
+// Stripe SDK works. (The old Pages-style `export const config` is invalid here
+// and breaks the build.)
+export const runtime = 'nodejs'
