@@ -25,7 +25,8 @@ export async function updateSession(request: NextRequest) {
     publicPaths.some(p => url.pathname === p) ||
     url.pathname.startsWith('/join/') ||
     url.pathname.startsWith('/browse') ||
-    url.pathname.startsWith('/auth/')
+    url.pathname.startsWith('/auth/') ||
+    url.pathname === '/api/ai/health'
   if (!user && !isPublic) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
