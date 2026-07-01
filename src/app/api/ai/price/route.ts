@@ -1,4 +1,4 @@
-import { aiJson, AI_MODEL } from '@/lib/ai'
+import { aiJson, AI_MODEL, lastAiError } from '@/lib/ai'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
@@ -18,7 +18,10 @@ Return ONLY valid JSON in this exact format:
   )
 
   if (!json) {
-    return NextResponse.json({ error: 'Could not estimate value' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Could not estimate value', detail: lastAiError || 'unknown AI error' },
+      { status: 502 }
+    )
   }
 
   // Log to ai_recommendation_log (non-blocking)
