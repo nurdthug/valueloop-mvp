@@ -1,4 +1,4 @@
-import { aiJson, AI_MODEL } from '@/lib/ai'
+import { aiJson, AI_MODEL, lastAiError } from '@/lib/ai'
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
@@ -47,11 +47,13 @@ export async function POST(req: Request) {
 
   const directResults: any[] = []
   const loopResults: any[] = []
+  let aiError: string | null = null
 
   // ── Direct matching ───────────────────────────────────────────────────────
   for (const candidate of candidates.slice(0, 5)) {
     const result = await scoreDirectMatch(post, candidate)
-    if (result?.score >= 50) {
+    if (!result) { aiError = lastAiError; continue }
+    if (result.score >= 50) {
       directResults.push({ candidate_post_id: candidate.id, type: 'direct', ...result })
     }
   }
@@ -146,5 +148,8 @@ export async function POST(req: Request) {
     model: AI_MODEL,
   })
 
-  return NextResponse.json({ matches: [...directResults.slice(0, 3), ...loopResults.slice(0, 1)] })
+  return NextResponse.json({
+    matches: [...directResults.slice(0, 3), ...loopResults.slice(0, 1)],
+    ...(aiError && !directResults.length && !loopResults.length ? { ai_error: aiError } : {}),
+  })
 }
