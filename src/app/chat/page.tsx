@@ -25,6 +25,8 @@ function ChatView() {
   const [exchangeStatus, setExchangeStatus] = useState<string | null>(null)
   const [acting, setActing] = useState(false)
   const [matchInfo, setMatchInfo] = useState<any>(null)
+  const [myRatings, setMyRatings] = useState<Record<string, number>>({})
+  const [ratingBusy, setRatingBusy] = useState<string | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
@@ -48,6 +50,12 @@ function ChatView() {
 
       const { data: exchange } = await supabase.from('exchanges').select('status').eq('match_id', matchId!).single()
       if (exchange) setExchangeStatus(exchange.status)
+
+      const { data: mine } = await supabase.from('ratings')
+        .select('ratee_id, stars').eq('match_id', matchId!).eq('rater_id', user.id)
+      if (mine?.length) {
+        setMyRatings(Object.fromEntries(mine.map((r: any) => [r.ratee_id, r.stars])))
+      }
     }
     load()
   }, [matchId])
@@ -81,6 +89,16 @@ function ChatView() {
     setActing(false)
   }
 
+  async function submitRating(rateeId: string, stars: number) {
+    if (!matchId || !userId || ratingBusy) return
+    setRatingBusy(rateeId)
+    const { error } = await supabase.from('ratings').upsert({
+      match_id: matchId, rater_id: userId, ratee_id: rateeId, stars,
+    }, { onConflict: 'match_id,rater_id,ratee_id' })
+    if (!error) setMyRatings(r => ({ ...r, [rateeId]: stars }))
+    setRatingBusy(null)
+  }
+
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault()
     if (!newMsg.trim() || !threadId || !userId) return
@@ -99,7 +117,8 @@ function ChatView() {
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Nav */}
-      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 flex-shrink-0">
+      <div className="px-4 pb-3 flex items-center gap-3 flex-shrink-0 border-b border-gray-100"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 12px)', background: 'rgba(255,255,255,.85)', backdropFilter: 'saturate(180%) blur(20px)', WebkitBackdropFilter: 'saturate(180%) blur(20px)' }}>
         <button onClick={() => router.back()} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 transition text-gray-500">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -109,12 +128,12 @@ function ChatView() {
           <p className="font-bold text-gray-900 text-sm truncate">{chatTitle}</p>
           {matchInfo && (
             <p className="text-xs text-gray-400">
-              {matchInfo.type === 'direct' ? 'â¡ Direct Match' : 'ð Loop Match'} Â· {matchInfo.match_score}% match
+              {matchInfo.type === 'direct' ? '⚡ Direct Match' : '🔄 Loop Match'} · {matchInfo.match_score}% match
             </p>
           )}
         </div>
         {exchangeStatus === 'completed' && (
-          <span className="text-xs bg-green-50 text-green-600 font-semibold px-2.5 py-1 rounded-full">â Done</span>
+          <span className="text-xs bg-green-50 text-green-600 font-semibold px-2.5 py-1 rounded-full">✅ Done</span>
         )}
       </div>
 
@@ -122,7 +141,7 @@ function ChatView() {
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.length === 0 && (
           <div className="text-center py-12 text-gray-400">
-            <div className="text-4xl mb-3">ð</div>
+            <div className="text-4xl mb-3">👋</div>
             <p className="text-sm font-medium">Start the conversation</p>
             <p className="text-xs mt-1">Introduce yourself and discuss the exchange</p>
           </div>
@@ -140,7 +159,7 @@ function ChatView() {
               )}
               <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                 isMe
-                  ? 'bg-gradient-to-r from-teal-500 to-purple-600 text-white rounded-br-md'
+                  ? 'bg-gradient-to-r from-blue-500 to-green-600 text-white rounded-br-md'
                   : 'bg-white border border-gray-100 text-gray-800 rounded-bl-md shadow-sm'
               }`}>
                 {msg.content}
@@ -152,10 +171,38 @@ function ChatView() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Exchange outcome */}
+      {/* Exchange outcome + trust rating */}
       {exchangeStatus === 'completed' && (
-        <div className="bg-green-50 border-t border-green-100 px-4 py-3 text-center flex-shrink-0">
-          <p className="text-sm text-green-700 font-semibold">â Exchange completed!</p>
+        <div className="bg-green-50 border-t border-green-100 px-4 py-3 flex-shrink-0">
+          <p className="text-sm text-green-700 font-semibold text-center">✅ Exchange completed!</p>
+          {otherParticipants.length > 0 && (
+            <div className="mt-3 space-y-2">
+              <p className="text-xs text-gray-500 text-center">Rate your exchange partner{otherParticipants.length > 1 ? 's' : ''}</p>
+              {otherParticipants.map((p: any) => {
+                const name = p.profiles?.display_name || 'Partner'
+                const given = myRatings[p.user_id]
+                return (
+                  <div key={p.user_id} className="flex items-center justify-between bg-white rounded-xl px-3 py-2 border border-green-100">
+                    <span className="text-xs font-semibold text-gray-700 truncate mr-2">{name}</span>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button key={star}
+                          onClick={() => submitRating(p.user_id, star)}
+                          disabled={ratingBusy === p.user_id}
+                          className={`text-lg leading-none transition ${given && star <= given ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'} disabled:opacity-50`}
+                          aria-label={`${star} star${star > 1 ? 's' : ''}`}>
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+              {Object.keys(myRatings).length > 0 && (
+                <p className="text-[11px] text-green-600 text-center">Thanks! Your rating updates their trust score.</p>
+              )}
+            </div>
+          )}
         </div>
       )}
       {exchangeStatus === 'abandoned' && (
@@ -168,11 +215,11 @@ function ChatView() {
         <div className="bg-white border-t border-gray-100 px-4 py-2 flex gap-2 flex-shrink-0">
           <button onClick={() => handleExchangeAction('completed')} disabled={acting}
             className="flex-1 py-2 bg-green-50 text-green-700 text-xs font-bold rounded-xl hover:bg-green-100 transition disabled:opacity-50 active:scale-[0.98]">
-            â Mark Complete
+            ✅ Mark Complete
           </button>
           <button onClick={() => handleExchangeAction('abandoned')} disabled={acting}
             className="flex-1 py-2 bg-gray-50 text-gray-500 text-xs font-semibold rounded-xl hover:bg-gray-100 transition disabled:opacity-50 active:scale-[0.98]">
-            â Abandon
+            ✗ Abandon
           </button>
         </div>
       )}
@@ -185,11 +232,11 @@ function ChatView() {
           type="text"
           value={newMsg}
           onChange={e => setNewMsg(e.target.value)}
-          placeholder="Messageâ¦"
-          className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 focus:bg-white transition"
+          placeholder="Message…"
+          className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:bg-white transition"
         />
         <button type="submit" disabled={sending || !newMsg.trim()}
-          className="w-10 h-10 bg-gradient-to-r from-teal-500 to-purple-600 text-white rounded-2xl flex items-center justify-center disabled:opacity-40 active:scale-95 transition flex-shrink-0">
+          className="w-10 h-10 bg-gradient-to-r from-blue-500 to-green-600 text-white rounded-2xl flex items-center justify-center disabled:opacity-40 active:scale-95 transition flex-shrink-0">
           <svg className="w-4 h-4 rotate-90" fill="currentColor" viewBox="0 0 24 24">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
