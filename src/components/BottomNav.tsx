@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 
 const tabs = [
   { href: '/dashboard', label: 'Home', icon: HomeIcon },
-  { href: '/explore', label: 'Explore', icon: ExploreIcon },
+  { href: '/browse', label: 'Explore', icon: ExploreIcon },
   { href: '/post/new', label: 'Post', icon: PlusIcon, cta: true },
   { href: '/matches', label: 'Matches', icon: MatchIcon },
   { href: '/profile', label: 'Profile', icon: ProfileIcon },
@@ -14,7 +14,7 @@ export default function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 safe-area-pb">
+    <nav className="vl-tabbar safe-area-pb">
       <div className="max-w-lg mx-auto flex items-center">
         {tabs.map(tab => {
           const active = pathname === tab.href || (tab.href !== '/dashboard' && pathname.startsWith(tab.href))
@@ -23,7 +23,7 @@ export default function BottomNav() {
             return (
               <Link key={tab.href} href={tab.href}
                 className="flex-1 flex flex-col items-center py-2">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-500 to-purple-600 flex items-center justify-center shadow-lg -mt-5">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-green-600 flex items-center justify-center shadow-lg -mt-5">
                   <Icon className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-[10px] text-gray-400 mt-1 font-medium">{tab.label}</span>
@@ -33,8 +33,8 @@ export default function BottomNav() {
           return (
             <Link key={tab.href} href={tab.href}
               className="flex-1 flex flex-col items-center py-3 gap-1">
-              <Icon className={`w-6 h-6 transition-colors ${active ? 'text-teal-500' : 'text-gray-400'}`} />
-              <span className={`text-[10px] font-medium transition-colors ${active ? 'text-teal-500' : 'text-gray-400'}`}>
+              <Icon className={`w-6 h-6 transition-colors ${active ? 'text-blue-500' : 'text-gray-400'}`} />
+              <span className={`text-[10px] font-medium transition-colors ${active ? 'text-blue-500' : 'text-gray-400'}`}>
                 {tab.label}
               </span>
             </Link>
