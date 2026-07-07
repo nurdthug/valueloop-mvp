@@ -19,7 +19,7 @@ const FLAG_COLORS: Record<string, string> = {
   repeated_failure: 'bg-yellow-100 text-yellow-700',
   invite_abuse: 'bg-pink-100 text-pink-700',
   poor_ai_match: 'bg-blue-100 text-blue-700',
-  user_report: 'bg-purple-100 text-purple-700',
+  user_report: 'bg-green-100 text-green-700',
   unusual_activity: 'bg-gray-100 text-gray-700',
 }
 
