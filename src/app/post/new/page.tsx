@@ -48,7 +48,7 @@ function PostForm() {
     setSaving(true)
     const supabase = createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
+    if (!user) { router.push('/login'); return }
 
     const { data, error } = await supabase.from('posts').insert({
       user_id: user.id, type, title, description, category,
