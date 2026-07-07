@@ -205,6 +205,14 @@ export default async function BrowsePage({
                 </div>
               </div>
 
+              {/* Cash purchase link (offers with a Stripe payment link) */}
+              {post.stripe_link && post.cash_price && post.type === 'offer' && (
+                <a href={post.stripe_link} target="_blank" rel="noopener noreferrer"
+                  className="mt-3 flex items-center justify-center gap-1.5 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-green-600 rounded-xl py-2.5 active:scale-[0.98] transition">
+                  💳 Buy now · ${post.cash_price}
+                </a>
+              )}
+
               {!user && (
                 <Link href="/signup"
                   className="mt-3 block text-center text-xs font-bold text-blue-600 bg-blue-50 rounded-xl py-2">
