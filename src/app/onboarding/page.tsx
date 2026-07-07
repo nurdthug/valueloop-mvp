@@ -5,25 +5,27 @@ import { createClient } from '@/lib/supabase/client'
 
 const STEPS = [
   {
-    title: 'Welcome to ValueLoop',
-    subtitle: 'Exchange Value. Directly.',
-    content: 'ValueLoop lets you trade what you have for what you need — no money required. Post what you can offer and what you need, and our AI finds people to swap with.',
-    emoji: '🔄',
+    title: 'Trade value,\nnot just cash',
+    subtitle: 'Welcome to ValueLoop',
+    content: 'Post what you need and what you can offer. ValueLoop finds people who fit — directly or through a multi-party loop.',
+    kind: 'hero',
   },
   {
-    title: 'How it works',
-    subtitle: 'Four simple steps',
+    title: 'Your AI value\nassistant',
+    subtitle: 'Smart, fair, transparent',
     steps: [
-      { emoji: '📋', label: 'Post what you need' },
-      { emoji: '🎁', label: 'Post what you offer' },
-      { emoji: '🤖', label: 'AI suggests matches' },
-      { emoji: '🤝', label: 'Chat & complete the exchange' },
+      { emoji: '📋', label: 'Post what you need', sub: 'Anything — skills, gear, time' },
+      { emoji: '🎁', label: 'Post what you offer', sub: 'AI suggests a fair value range' },
+      { emoji: '🤖', label: 'AI finds your matches', sub: 'Direct swaps or 3-way loops' },
+      { emoji: '🤝', label: 'Chat & complete', sub: 'Reviewed for safety early on' },
     ],
+    kind: 'steps',
   },
   {
-    title: 'Set up your profile',
-    subtitle: 'Help others know who they\'re exchanging with',
+    title: 'Set up your\nprofile',
+    subtitle: "Help others know who they're swapping with",
     isForm: true,
+    kind: 'form',
   },
 ]
 
@@ -60,78 +62,111 @@ export default function OnboardingPage() {
   }
 
   const s = STEPS[step]
+  const isLast = step === STEPS.length - 1
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex flex-col" style={{ background: '#0D1B2A', color: '#fff' }}>
+      {/* ambient glow */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute rounded-full blur-3xl opacity-40"
+          style={{ width: 420, height: 420, top: -80, left: '50%', transform: 'translateX(-50%)',
+            background: step === 0 ? 'radial-gradient(circle,#1E8BF5,transparent)'
+              : step === 1 ? 'radial-gradient(circle,#19C95F,transparent)'
+              : 'radial-gradient(circle,#F59E0B,transparent)' }} />
+      </div>
+
+      <div className="relative flex-1 flex flex-col px-7" style={{ paddingTop: 'calc(env(safe-area-inset-top,0px) + 56px)' }}>
         {/* Progress dots */}
-        <div className="flex justify-center gap-2 mb-8">
+        <div className="flex justify-center gap-2 mb-12">
           {STEPS.map((_, i) => (
-            <div key={i} className={`h-2 rounded-full transition-all ${i === step ? 'w-8 bg-teal-500' : 'w-2 bg-gray-200'}`} />
+            <div key={i} className="h-2 rounded-full transition-all duration-300"
+              style={{ width: i === step ? 28 : 8, background: i === step ? '#1E8BF5' : 'rgba(255,255,255,.22)' }} />
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-          {step === 0 && (
-            <div className="text-center">
-              <div className="text-6xl mb-4">{s.emoji}</div>
-              <h1 className="text-2xl font-bold text-gray-900">{s.title}</h1>
-              <p className="text-teal-600 font-medium mt-1">{s.subtitle}</p>
-              <p className="text-gray-500 text-sm mt-4 leading-relaxed">{s.content}</p>
-            </div>
-          )}
-          {step === 1 && (
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 text-center">{s.title}</h1>
-              <p className="text-gray-500 text-sm text-center mt-1">{s.subtitle}</p>
-              <div className="mt-6 space-y-4">
-                {s.steps?.map((st, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                    <span className="text-2xl">{st.emoji}</span>
-                    <span className="font-medium text-gray-700">{st.label}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          {step === 2 && (
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 text-center">{s.title}</h1>
-              <p className="text-gray-500 text-sm text-center mt-1">{s.subtitle}</p>
-              <div className="mt-6 space-y-4">
-                <input type="text" placeholder="Display name" value={name} onChange={e => setName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
-                <textarea placeholder="Short bio (optional)" value={bio} onChange={e => setBio(e.target.value)} rows={3}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 resize-none" />
-                <input type="text" placeholder="Your city / location (optional)" value={location} onChange={e => setLocation(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400" />
-              </div>
-            </div>
-          )}
-
-          {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
-
-          <div className="mt-8 flex gap-3">
-            {step > 0 && (
-              <button onClick={() => setStep(s => s - 1)}
-                className="flex-1 py-3 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
-                Back
-              </button>
-            )}
-            {step < STEPS.length - 1 ? (
-              <button onClick={() => setStep(s => s + 1)}
-                className="flex-1 py-3 bg-gradient-to-r from-teal-500 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 transition">
-                Next
-              </button>
-            ) : (
-              <button onClick={handleFinish} disabled={saving}
-                className="flex-1 py-3 bg-gradient-to-r from-teal-500 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 transition disabled:opacity-50">
-                {saving ? 'Saving…' : 'Get Started 🚀'}
-              </button>
-            )}
+        {/* Step 0 — hero */}
+        {step === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center text-center vl-fade-in -mt-10">
+            <video
+              src="/valueloop-animation.mp4"
+              poster="/valueloop-animation-poster.jpg"
+              autoPlay loop muted playsInline
+              className="rounded-3xl"
+              style={{ width: 188, height: 'auto', boxShadow: '0 24px 60px rgba(30,139,245,.4)' }}
+            />
+            <h1 className="mt-8 text-4xl font-extrabold whitespace-pre-line leading-[1.1] tracking-tight">{s.title}</h1>
+            <p className="mt-5 text-base leading-relaxed max-w-xs" style={{ color: '#9FB0C6' }}>{s.content}</p>
           </div>
+        )}
+
+        {/* Step 1 — steps list */}
+        {step === 1 && (
+          <div className="flex-1 vl-fade-in">
+            <h1 className="text-4xl font-extrabold whitespace-pre-line leading-[1.1] tracking-tight">{s.title}</h1>
+            <p className="mt-2 text-sm" style={{ color: '#9FB0C6' }}>{s.subtitle}</p>
+            <div className="mt-8 space-y-3">
+              {s.steps?.map((st, i) => (
+                <div key={i} className="flex items-center gap-4 p-4 rounded-2xl"
+                  style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.08)' }}>
+                  <span className="text-2xl">{st.emoji}</span>
+                  <div>
+                    <div className="font-bold">{st.label}</div>
+                    <div className="text-xs" style={{ color: '#9FB0C6' }}>{st.sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 2 — profile form */}
+        {step === 2 && (
+          <div className="flex-1 vl-fade-in">
+            <h1 className="text-4xl font-extrabold whitespace-pre-line leading-[1.1] tracking-tight">{s.title}</h1>
+            <p className="mt-2 text-sm" style={{ color: '#9FB0C6' }}>{s.subtitle}</p>
+            <div className="mt-8 space-y-3">
+              <input type="text" placeholder="Display name" value={name} onChange={e => setName(e.target.value)}
+                className="w-full rounded-2xl px-4 py-4 text-base outline-none"
+                style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.12)', color: '#fff' }} />
+              <textarea placeholder="Short bio (optional)" value={bio} onChange={e => setBio(e.target.value)} rows={3}
+                className="w-full rounded-2xl px-4 py-4 text-base outline-none resize-none"
+                style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.12)', color: '#fff' }} />
+              <input type="text" placeholder="Your city / location (optional)" value={location} onChange={e => setLocation(e.target.value)}
+                className="w-full rounded-2xl px-4 py-4 text-base outline-none"
+                style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.12)', color: '#fff' }} />
+            </div>
+          </div>
+        )}
+
+        {error && <p className="text-sm mt-4 text-center" style={{ color: '#FCA5A5' }}>{error}</p>}
+      </div>
+
+      {/* Footer actions */}
+      <div className="relative px-7" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom,0px) + 28px)' }}>
+        <div className="flex gap-3">
+          {step > 0 && (
+            <button onClick={() => setStep(v => v - 1)}
+              className="py-4 px-6 rounded-2xl font-bold transition active:scale-95"
+              style={{ background: 'rgba(255,255,255,.08)', color: '#fff' }}>
+              Back
+            </button>
+          )}
+          {!isLast ? (
+            <button onClick={() => setStep(v => v + 1)}
+              className="flex-1 py-4 rounded-2xl font-bold text-white transition active:scale-95"
+              style={{ background: 'linear-gradient(135deg,#1E8BF5,#19C95F)', boxShadow: '0 12px 28px rgba(30,139,245,.4)' }}>
+              {step === 0 ? 'Get Started' : 'Continue'}
+            </button>
+          ) : (
+            <button onClick={handleFinish} disabled={saving}
+              className="flex-1 py-4 rounded-2xl font-bold text-white transition active:scale-95 disabled:opacity-50"
+              style={{ background: 'linear-gradient(135deg,#1E8BF5,#19C95F)', boxShadow: '0 12px 28px rgba(30,139,245,.4)' }}>
+              {saving ? 'Saving…' : 'Enter ValueLoop'}
+            </button>
+          )}
         </div>
       </div>
     </div>
   )
 }
+
