@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+import { createAdminClient } from '@/lib/supabase/admin'
 import Link from 'next/link'
 
 interface Props {
@@ -24,7 +24,7 @@ export default async function JoinPage({ params }: Props) {
           <div className="text-5xl mb-4">😕</div>
           <h1 className="text-xl font-bold text-gray-900">Invite not found</h1>
           <p className="text-gray-500 text-sm mt-2">This link may have expired or been deactivated.</p>
-          <Link href="/signup" className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-teal-500 to-purple-600 text-white text-sm font-semibold rounded-xl">
+          <Link href="/signup" className="inline-block mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-green-600 text-white text-sm font-semibold rounded-xl">
             Sign up anyway →
           </Link>
         </div>
@@ -32,8 +32,9 @@ export default async function JoinPage({ params }: Props) {
     )
   }
 
-  // Increment click count
-  await supabase
+  // Increment click count — the visitor doesn't own this invite row, so RLS
+  // would block the write with the anon client; use the service-role client.
+  await createAdminClient()
     .from('invite_links')
     .update({ click_count: invite.click_count + 1 })
     .eq('id', invite.id)
@@ -47,7 +48,7 @@ export default async function JoinPage({ params }: Props) {
           <div className="text-6xl mb-4">🔄</div>
           <h1 className="text-2xl font-bold text-gray-900">You&apos;re invited to ValueLoop</h1>
           <p className="text-gray-500 text-sm mt-2">
-            <span className="font-medium text-teal-600">{inviterName}</span> invited you to join the value exchange community.
+            <span className="font-medium text-blue-600">{inviterName}</span> invited you to join the value exchange community.
           </p>
         </div>
 
@@ -84,13 +85,13 @@ export default async function JoinPage({ params }: Props) {
 
         <Link
           href={`/signup?ref=${code}`}
-          className="block w-full py-4 bg-gradient-to-r from-teal-500 to-purple-600 text-white font-bold rounded-xl hover:opacity-90 transition text-sm text-center"
+          className="block w-full py-4 bg-gradient-to-r from-blue-500 to-green-600 text-white font-bold rounded-xl hover:opacity-90 transition text-sm text-center"
         >
           Join ValueLoop 🚀
         </Link>
         <p className="text-center text-xs text-gray-400 mt-4">
           Already have an account?{' '}
-          <Link href="/login" className="text-teal-600">Sign in</Link>
+          <Link href="/login" className="text-blue-600">Sign in</Link>
         </p>
       </div>
     </div>
