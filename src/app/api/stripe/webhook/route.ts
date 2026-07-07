@@ -1,5 +1,5 @@
 import Stripe from 'stripe'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-06-20' })
@@ -20,7 +20,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  const supabase = await createClient()
+  // Webhooks have no user session — use the service-role client so RLS
+  // doesn't silently block these writes.
+  const supabase = createAdminClient()
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
@@ -52,11 +54,25 @@ export async function POST(req: Request) {
 
       // Mark post as matched/completed
       await supabase.from('posts').update({ status: 'matched' }).eq('id', postId).then(() => {}, () => {})
-    }
-  }
 
-  if (event.type === 'payment_link.updated') {
-    // Handle payment link deactivation if needed
+      // If this post is part of a match, record the cash-based exchange
+      const { data: participant } = await supabase
+        .from('match_participants')
+        .select('match_id')
+        .eq('post_id', postId)
+        .limit(1)
+        .maybeSingle()
+
+      if (participant) {
+        await supabase.from('exchanges').upsert({
+          match_id: participant.match_id,
+          status: 'completed',
+          cash_used: true,
+          stripe_payment_id: (session.payment_intent as string) || null,
+          completed_at: new Date().toISOString(),
+        }, { onConflict: 'match_id' }).then(() => {}, () => {})
+      }
+    }
   }
 
   return NextResponse.json({ received: true })
