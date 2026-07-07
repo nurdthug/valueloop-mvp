@@ -2,7 +2,7 @@ import Link from 'next/link'
 import VLLogo from '@/components/VLLogo'
 
 export const metadata = {
-  title: 'Terms of Service â ValueLoop',
+  title: 'Terms of Service — ValueLoop',
   description: 'The rules and conditions for using ValueLoop.',
 }
 
@@ -12,20 +12,20 @@ export default function TermsPage() {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/"><VLLogo size={28} /></Link>
-          <Link href="/login" className="text-sm text-teal-600 font-semibold">Sign in</Link>
+          <Link href="/login" className="text-sm text-blue-600 font-semibold">Sign in</Link>
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-10 pb-20">
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Terms of Service</h1>
-          <p className="text-sm text-gray-400 mb-8">Effective date: June 15, 2025 Â· Last updated: June 15, 2025</p>
+          <p className="text-sm text-gray-400 mb-8">Effective date: June 15, 2025 · Last updated: June 15, 2025</p>
 
           <div className="prose prose-sm max-w-none text-gray-600 space-y-6">
 
             <section>
               <h2 className="text-base font-bold text-gray-900 mb-2">1. Acceptance of Terms</h2>
-              <p>By creating an account or using ValueLoop ("the Platform"), you agree to these Terms of Service ("Terms") and our <Link href="/privacy" className="text-teal-600">Privacy Policy</Link>. If you do not agree, do not use the Platform. These Terms form a binding agreement between you and <strong>Zean LLC</strong>.</p>
+              <p>By creating an account or using ValueLoop ("the Platform"), you agree to these Terms of Service ("Terms") and our <Link href="/privacy" className="text-blue-600">Privacy Policy</Link>. If you do not agree, do not use the Platform. These Terms form a binding agreement between you and <strong>Zean LLC</strong>.</p>
             </section>
 
             <section>
@@ -45,7 +45,7 @@ export default function TermsPage() {
                 <li>You must provide accurate information when creating your account</li>
                 <li>You may not create accounts on behalf of others without authorization</li>
                 <li>You may not have more than one active account</li>
-                <li>Notify us immediately at <a href="mailto:hello@valueloop.app" className="text-teal-600">hello@valueloop.app</a> if you suspect unauthorized account access</li>
+                <li>Notify us immediately at <a href="mailto:hello@valueloop.app" className="text-blue-600">hello@valueloop.app</a> if you suspect unauthorized account access</li>
               </ul>
             </section>
 
@@ -112,16 +112,16 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-base font-bold text-gray-900 mb-2">15. Contact</h2>
-              <p>Zean LLC<br />Email: <a href="mailto:hello@valueloop.app" className="text-teal-600">hello@valueloop.app</a><br />Website: <a href="https://valueloop.app" className="text-teal-600">valueloop.app</a></p>
+              <p>Zean LLC<br />Email: <a href="mailto:hello@valueloop.app" className="text-blue-600">hello@valueloop.app</a><br />Website: <a href="https://valueloop.app" className="text-blue-600">valueloop.app</a></p>
             </section>
 
           </div>
         </div>
 
         <div className="text-center mt-6 flex items-center justify-center gap-4 text-sm text-gray-400">
-          <Link href="/privacy" className="hover:text-teal-600 transition">Privacy Policy</Link>
-          <span>Â·</span>
-          <Link href="/login" className="hover:text-teal-600 transition">Sign in</Link>
+          <Link href="/privacy" className="hover:text-blue-600 transition">Privacy Policy</Link>
+          <span>·</span>
+          <Link href="/login" className="hover:text-blue-600 transition">Sign in</Link>
         </div>
       </div>
     </div>
