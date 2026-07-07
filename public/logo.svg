@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="vl" x1="180" y1="380" x2="844" y2="644" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1E8BF5"/>
+      <stop offset="0.5" stop-color="#13B0C9"/>
+      <stop offset="1" stop-color="#19C95F"/>
+    </linearGradient>
+    <linearGradient id="vlsheen" x1="0" y1="340" x2="0" y2="700" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- infinity / value loop ribbon -->
+  <path fill="none" stroke="url(#vl)" stroke-width="132" stroke-linecap="round" stroke-linejoin="round"
+    d="M512 512
+       C 432 360 232 356 196 470
+       C 156 600 300 700 392 626
+       C 470 564 470 460 512 512
+       C 554 564 554 668 632 626
+       C 724 700 868 600 828 470
+       C 792 356 592 360 512 512 Z"/>
+  <path fill="none" stroke="url(#vlsheen)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"
+    d="M512 512 C 432 360 232 356 196 470 C 470 460 470 460 512 512
+       C 554 564 554 668 632 626 C 724 700 868 600 828 470" opacity="0.6"/>
+</svg>
