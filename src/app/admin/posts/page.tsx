@@ -40,7 +40,7 @@ export default async function AdminPostsPage() {
 
   const statusColors: Record<string, string> = {
     active:    'bg-green-100 text-green-700',
-    matched:   'bg-teal-100 text-teal-700',
+    matched:   'bg-blue-100 text-blue-700',
     completed: 'bg-blue-100 text-blue-700',
     abandoned: 'bg-gray-100 text-gray-500',
     flagged:   'bg-red-100 text-red-700',
