@@ -33,7 +33,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <div className="h-1.5 bg-gradient-to-r from-teal-500 to-purple-600" />
+      <div className="h-1.5 bg-gradient-to-r from-blue-500 to-green-600" />
 
       <div className="flex-1 flex flex-col items-center justify-center px-5 py-8">
         <div className="mb-8">
@@ -65,10 +65,10 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="space-y-3">
             <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full px-4 py-3.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white shadow-sm" required />
+              className="w-full px-4 py-3.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white shadow-sm" required />
             <div className="relative">
               <input type={showPassword ? 'text' : 'password'} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)}
-                className="w-full px-4 py-3.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 bg-white shadow-sm pr-14" required />
+                className="w-full px-4 py-3.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white shadow-sm pr-14" required />
               <button type="button" onClick={() => setShowPassword(v => !v)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-semibold">
                 {showPassword ? 'Hide' : 'Show'}
@@ -77,20 +77,20 @@ export default function LoginPage() {
 
             {error && (
               <div className="bg-red-50 border border-red-100 rounded-xl px-3 py-2.5 flex items-start gap-2">
-                <span className="text-sm">â ï¸</span>
+                <span className="text-sm">⚠️</span>
                 <p className="text-red-600 text-sm">{error}</p>
               </div>
             )}
 
             <button type="submit" disabled={loading}
-              className="w-full py-3.5 bg-gradient-to-r from-teal-500 to-purple-600 text-white font-bold rounded-2xl hover:opacity-90 active:scale-[0.98] transition shadow-lg shadow-teal-500/20 disabled:opacity-50 text-sm">
+              className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-green-600 text-white font-bold rounded-2xl hover:opacity-90 active:scale-[0.98] transition shadow-lg shadow-blue-500/20 disabled:opacity-50 text-sm">
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                   </svg>
-                  Signing inâ¦
+                  Signing in…
                 </span>
               ) : 'Sign In'}
             </button>
@@ -98,7 +98,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             No account?{' '}
-            <Link href="/signup" className="text-teal-600 font-semibold hover:underline">Join ValueLoop</Link>
+            <Link href="/signup" className="text-blue-600 font-semibold hover:underline">Join ValueLoop</Link>
           </p>
         </div>
       </div>
