@@ -61,7 +61,7 @@ export default async function AdminDashboard() {
         {/* Quick nav */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link href="/admin/matches"
-            className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-teal-200 transition">
+            className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-blue-200 transition">
             <div className="text-2xl mb-3">🤝</div>
             <div className="font-semibold text-gray-900">Review Matches</div>
             <div className="text-sm text-gray-500 mt-1">Approve or reject AI-suggested matches before users are connected</div>
@@ -70,13 +70,13 @@ export default async function AdminDashboard() {
             )}
           </Link>
           <Link href="/admin/users"
-            className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-teal-200 transition">
+            className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-blue-200 transition">
             <div className="text-2xl mb-3">👥</div>
             <div className="font-semibold text-gray-900">Users</div>
             <div className="text-sm text-gray-500 mt-1">View user accounts, trust scores, and invite activity</div>
           </Link>
           <Link href="/admin/flags"
-            className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-teal-200 transition">
+            className="bg-white rounded-2xl border border-gray-100 p-6 hover:border-blue-200 transition">
             <div className="text-2xl mb-3">🚩</div>
             <div className="font-semibold text-gray-900">Activity Flags</div>
             <div className="text-sm text-gray-500 mt-1">Investigate unusual behavior, spam, and poor AI suggestions</div>
