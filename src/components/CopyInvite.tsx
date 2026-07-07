@@ -21,9 +21,9 @@ export default function CopyInvite({ inviteCode }: { inviteCode: string }) {
         className={`flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-lg transition-all active:scale-95 ${
           copied
             ? 'bg-green-500 text-white'
-            : 'bg-gradient-to-r from-teal-500 to-purple-600 text-white'
+            : 'bg-gradient-to-r from-blue-500 to-green-600 text-white'
         }`}>
-        {copied ? 'â Copied!' : 'Copy'}
+        {copied ? '✓ Copied!' : 'Copy'}
       </button>
     </div>
   )
