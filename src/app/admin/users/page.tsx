@@ -42,7 +42,7 @@ export default async function AdminUsersPage() {
                 <tr key={u.id} className="border-b border-gray-50 hover:bg-gray-50 transition">
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-green-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                         {u.display_name?.[0] || '?'}
                       </div>
                       <div>
@@ -53,7 +53,7 @@ export default async function AdminUsersPage() {
                   </td>
                   <td className="px-5 py-3">
                     <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                      u.role === 'super_admin' ? 'bg-purple-100 text-purple-700' :
+                      u.role === 'super_admin' ? 'bg-green-100 text-green-700' :
                       u.role === 'admin' ? 'bg-blue-100 text-blue-700' :
                       'bg-gray-100 text-gray-600'
                     }`}>{u.role}</span>
@@ -61,7 +61,7 @@ export default async function AdminUsersPage() {
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                        <div className="h-full bg-teal-400 rounded-full" style={{ width: `${u.trust_score}%` }} />
+                        <div className="h-full bg-blue-400 rounded-full" style={{ width: `${u.trust_score}%` }} />
                       </div>
                       <span className="text-xs text-gray-500">{u.trust_score}</span>
                     </div>
