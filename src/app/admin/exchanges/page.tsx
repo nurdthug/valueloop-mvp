@@ -21,7 +21,7 @@ export default async function AdminExchangesPage() {
 
   const statusColors: Record<string, string> = {
     completed:   'bg-green-100 text-green-700',
-    in_progress: 'bg-teal-100 text-teal-700',
+    in_progress: 'bg-blue-100 text-blue-700',
     abandoned:   'bg-gray-100 text-gray-500',
   }
 
@@ -41,7 +41,7 @@ export default async function AdminExchangesPage() {
             <div className="text-xs text-gray-500 mt-1 font-medium">Completed</div>
           </div>
           <div className="bg-white rounded-2xl border border-gray-100 p-5 text-center">
-            <div className="text-3xl font-bold text-teal-600">{inProgress.length}</div>
+            <div className="text-3xl font-bold text-blue-600">{inProgress.length}</div>
             <div className="text-xs text-gray-500 mt-1 font-medium">In Progress</div>
           </div>
           <div className="bg-white rounded-2xl border border-gray-100 p-5 text-center">
@@ -55,13 +55,13 @@ export default async function AdminExchangesPage() {
           <div className="bg-white rounded-2xl border border-gray-100 p-5">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-semibold text-gray-900">Completion rate</span>
-              <span className="text-sm font-bold text-teal-600">
+              <span className="text-sm font-bold text-blue-600">
                 {Math.round((completed.length / (exchanges?.length ?? 1)) * 100)}%
               </span>
             </div>
             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-teal-400 to-teal-500 rounded-full"
+                className="h-full bg-gradient-to-r from-blue-400 to-blue-500 rounded-full"
                 style={{ width: `${Math.round((completed.length / (exchanges?.length ?? 1)) * 100)}%` }}
               />
             </div>
@@ -105,7 +105,7 @@ export default async function AdminExchangesPage() {
                 <div className="flex gap-2 flex-wrap">
                   {participants.map((p: any) => (
                     <div key={p.user_id} className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
-                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-teal-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-green-500 flex items-center justify-center text-white text-xs font-bold">
                         {p.profiles?.display_name?.[0] || '?'}
                       </div>
                       <div>
