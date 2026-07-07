@@ -103,8 +103,10 @@ function ChatView() {
     e.preventDefault()
     if (!newMsg.trim() || !threadId || !userId) return
     setSending(true)
-    await supabase.from('chat_messages').insert({ thread_id: threadId, user_id: userId, content: newMsg.trim() })
+    const text = newMsg.trim()
     setNewMsg('')
+    const { error } = await supabase.from('chat_messages').insert({ thread_id: threadId, user_id: userId, content: text })
+    if (error) setNewMsg(text) // restore so the message isn't lost
     setSending(false)
     inputRef.current?.focus()
   }
