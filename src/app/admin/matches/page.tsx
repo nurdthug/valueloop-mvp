@@ -71,7 +71,7 @@ export default async function AdminMatchesPage() {
                   <div key={match.id} className="bg-white rounded-2xl border border-gray-100 p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
-                        <span className="text-xs font-bold text-teal-600 bg-teal-50 px-2 py-1 rounded-full">
+                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
                           {match.type === 'direct' ? '⚡ Direct' : '🔄 Loop'}
                         </span>
                         <span className="ml-2 text-xs text-gray-400">{match.match_score}% match score</span>
@@ -88,7 +88,7 @@ export default async function AdminMatchesPage() {
                       {participants.map((p: any) => (
                         <div key={p.id} className="bg-gray-50 rounded-xl p-4">
                           <div className="flex items-center gap-2 mb-2">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-teal-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-green-500 flex items-center justify-center text-white text-xs font-bold">
                               {p.profiles?.display_name?.[0] || '?'}
                             </div>
                             <span className="text-sm font-medium text-gray-900">{p.profiles?.display_name}</span>
@@ -116,10 +116,10 @@ export default async function AdminMatchesPage() {
                     <form action={reviewMatch} className="border-t border-gray-100 pt-4">
                       <input type="hidden" name="match_id" value={match.id} />
                       <textarea name="notes" placeholder="Admin notes (optional)…" rows={2}
-                        className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 resize-none mb-3" />
+                        className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none mb-3" />
                       <div className="flex gap-3">
                         <button type="submit" name="action" value="approve"
-                          className="flex-1 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-semibold rounded-xl text-sm hover:opacity-90 transition">
+                          className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl text-sm hover:opacity-90 transition">
                           ✅ Approve — Connect Users
                         </button>
                         <button type="submit" name="action" value="reject"
