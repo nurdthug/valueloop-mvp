@@ -26,7 +26,8 @@ export async function updateSession(request: NextRequest) {
     url.pathname.startsWith('/join/') ||
     url.pathname.startsWith('/browse') ||
     url.pathname.startsWith('/auth/') ||
-    url.pathname === '/api/ai/health'
+    url.pathname === '/api/ai/health' ||
+    url.pathname === '/api/stripe/webhook' // Stripe's servers have no session; request is verified by signature instead
   if (!user && !isPublic) {
     url.pathname = '/login'
     return NextResponse.redirect(url)
